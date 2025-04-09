@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - Inventory Management System{% endblock %}
+
+{% block main_content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="display-4 mb-4">Welcome to Inventory Management System</h1>
+            <p class="lead mb-4">A modern solution for managing your inventory and sales.</p>
+            
+            {% if current_user.is_authenticated %}
+                <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg px-4 gap-3">
+                        <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                    </a>
+                    <a href="{{ url_for('products') }}" class="btn btn-outline-primary btn-lg px-4">
+                        <i class="fas fa-box"></i> View Products
+                    </a>
+                </div>
+            {% else %}
+                <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg px-4 gap-3">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-box fa-3x text-primary mb-3"></i>
+                    <h3 class="card-title">Product Management</h3>
+                    <p class="card-text">Easily manage your inventory with add, edit, and delete functionality.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+                    <h3 class="card-title">Sales Tracking</h3>
+                    <p class="card-text">Track sales and generate detailed reports for better business insights.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                    <h3 class="card-title">User Management</h3>
+                    <p class="card-text">Role-based access control for secure inventory management.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

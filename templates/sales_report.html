@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Sales Report - Inventory Management System{% endblock %}
+
+{% block authenticated_content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Sales Report</h1>
+        <button class="btn btn-primary" onclick="window.print()">
+            <i class="fas fa-print me-2"></i>Print Report
+        </button>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Sales</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ "%.2f"|format(products|sum(attribute='sales')) }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Items Sold</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ products|sum(attribute='num_sold') }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Average Sale Price</div>
+                            {% set total_items = products|sum(attribute='num_sold') %}
+                            {% set avg_price = (products|sum(attribute='sales') / total_items) if total_items > 0 else 0 %}
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ "%.2f"|format(avg_price) }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Products with Sales</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ products|selectattr('num_sold', '>', 0)|list|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-box fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales Report Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Detailed Sales Report</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="salesTable">
+                    <thead>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Name</th>
+                            <th>Quantity Sold</th>
+                            <th>Total Sales</th>
+                            <th>Average Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products|sort(attribute='sales', reverse=true) %}
+                        {% if product.num_sold > 0 %}
+                        <tr>
+                            <td>{{ product.product_id }}</td>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.num_sold }}</td>
+                            <td>${{ "%.2f"|format(product.sales) }}</td>
+                            <td>${{ "%.2f"|format(product.sales / product.num_sold) }}</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="font-weight-bold">
+                            <td colspan="2">Total</td>
+                            <td>{{ products|sum(attribute='num_sold') }}</td>
+                            <td>${{ "%.2f"|format(products|sum(attribute='sales')) }}</td>
+                            <td>${{ "%.2f"|format((products|sum(attribute='sales') / products|sum(attribute='num_sold')) if products|sum(attribute='num_sold') > 0 else 0) }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .sidebar, .btn-primary {
+        display: none !important;
+    }
+    .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+    .card {
+        break-inside: avoid;
+    }
+}
+
+.border-left-primary { border-left: .25rem solid #4e73df !important; }
+.border-left-success { border-left: .25rem solid #1cc88a !important; }
+.border-left-info { border-left: .25rem solid #36b9cc !important; }
+.border-left-warning { border-left: .25rem solid #f6c23e !important; }
+</style>
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add any additional JavaScript functionality here
+});
+</script>
+{% endblock %}
+{% endblock %} 
